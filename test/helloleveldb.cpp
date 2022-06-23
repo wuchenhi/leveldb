@@ -8,12 +8,15 @@ using namespace leveldb;
 int main() {
     leveldb::DB* db;
     leveldb::Options options;
-    options.create_if_missing = true;//没有就创建
+    //没有就创建
+    options.create_if_missing = true;
     leveldb::Status status = leveldb::DB::Open(options, "testdb", &db);
     assert(status.ok());
+    //写
     status = db->Put(WriteOptions(), "first", "hello world!");
     assert(status.ok());
     string res;
+    //读
     status = db->Get(ReadOptions(), "first", &res);
     assert(status.ok());
     cout << res << endl;

@@ -10,6 +10,7 @@
 // Include the appropriate platform specific file below.  If you are
 // porting to a new platform, see "port_example.h" for documentation
 // of what the new port_<platform>.h file must provide.
+// 定义不同的宏选择环境并导入相应的头文件
 #if defined(LEVELDB_PLATFORM_POSIX) || defined(LEVELDB_PLATFORM_WINDOWS)
 #include "port/port_stdcxx.h"
 #elif defined(LEVELDB_PLATFORM_CHROMIUM)
