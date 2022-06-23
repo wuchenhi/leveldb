@@ -11,8 +11,9 @@
 namespace leveldb {
 
 // Wraps an instance whose destructor is never called.
-//
+// 不是很懂
 // This is intended for use with function-level static variables.
+// ⽆析构类 NoDestructor构造函数会在NoDestructor的内存 instance_storage_ 中采⽤placement new 构造对象，最后使⽤get返回单例对象。
 template <typename InstanceType>
 class NoDestructor {
  public:
@@ -24,7 +25,7 @@ class NoDestructor {
         alignof(decltype(instance_storage_)) >= alignof(InstanceType),
         "instance_storage_ does not meet the instance's alignment requirement");
     new (&instance_storage_)
-        InstanceType(std::forward<ConstructorArgTypes>(constructor_args)...);
+        InstanceType(std::forward<ConstructorArgTypes>(constructor_args)...);//placement new，在已经分配好的内存上构造对象，同时采⽤了完美转发传递参数
   }
 
   ~NoDestructor() = default;
@@ -38,7 +39,7 @@ class NoDestructor {
 
  private:
   typename std::aligned_storage<sizeof(InstanceType),
-                                alignof(InstanceType)>::type instance_storage_;
+                                alignof(InstanceType)>::type instance_storage_;//取出InstanceType的字节对⻬
 };
 
 }  // namespace leveldb

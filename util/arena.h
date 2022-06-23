@@ -12,7 +12,7 @@
 #include <vector>
 
 namespace leveldb {
-
+//内存池
 class Arena {
  public:
   Arena();
@@ -25,7 +25,7 @@ class Arena {
   // Return a pointer to a newly allocated memory block of "bytes" bytes.
   char* Allocate(size_t bytes);
 
-  // Allocate memory with the normal alignment guarantees provided by malloc.
+  // Allocate memory with the normal alignment guarantees provided by malloc.  aligned 对齐的
   char* AllocateAligned(size_t bytes);
 
   // Returns an estimate of the total memory usage of data allocated
@@ -38,18 +38,27 @@ class Arena {
   char* AllocateFallback(size_t bytes);
   char* AllocateNewBlock(size_t block_bytes);
 
-  // Allocation state
-  char* alloc_ptr_;
-  size_t alloc_bytes_remaining_;
+  // Allocation state 
+  char* alloc_ptr_;                //当前块的偏移位置
+  size_t alloc_bytes_remaining_;   //当前块剩余字节
 
   // Array of new[] allocated memory blocks
-  std::vector<char*> blocks_;
+  std::vector<char*> blocks_;      //动态数组
 
   // Total memory usage of the arena.
   //
   // TODO(costan): This member is accessed via atomics, but the others are
   //               accessed without any locking. Is this OK?
-  std::atomic<size_t> memory_usage_;
+  std::atomic<size_t> memory_usage_; //整块 blocks_ 所占用的内存，包含分配的块与指向块的指针  atomic 不熟悉
+//自己添加的  方便看 当前块剩余字节大小
+public:
+    size_t wuyiBytesRemain() {
+        return alloc_bytes_remaining_;
+    }
+    size_t wuyiBlockSize() {
+        return blocks_.size();
+    }
+
 };
 
 inline char* Arena::Allocate(size_t bytes) {

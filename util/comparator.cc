@@ -27,7 +27,7 @@ class BytewiseComparatorImpl : public Comparator {
   int Compare(const Slice& a, const Slice& b) const override {
     return a.compare(b);
   }
-
+    //是start < limit，就把start修改为 *start 和limit的共同前缀的ascii加1
   void FindShortestSeparator(std::string* start,
                              const Slice& limit) const override {
     // Find length of common prefix
@@ -45,12 +45,12 @@ class BytewiseComparatorImpl : public Comparator {
       if (diff_byte < static_cast<uint8_t>(0xff) &&
           diff_byte + 1 < static_cast<uint8_t>(limit[diff_index])) {
         (*start)[diff_index]++;
-        start->resize(diff_index + 1);
+        start->resize(diff_index + 1);  //why resize
         assert(Compare(*start, limit) < 0);
       }
     }
   }
-
+    //对key中第⼀个以uint8⽅式+1的字节+1，清除该位后⾯的数据
   void FindShortSuccessor(std::string* key) const override {
     // Find first character that can be incremented
     size_t n = key->size();
@@ -67,6 +67,7 @@ class BytewiseComparatorImpl : public Comparator {
 };
 }  // namespace
 
+//静态局部变量 线程安全的单例模式
 const Comparator* BytewiseComparator() {
   static NoDestructor<BytewiseComparatorImpl> singleton;
   return singleton.get();

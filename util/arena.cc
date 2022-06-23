@@ -25,7 +25,7 @@ char* Arena::AllocateFallback(size_t bytes) {
     return result;
   }
 
-  // We waste the remaining space in the current block.
+  // We waste the remaining space in the current block.   bytes小于bytes > kBlockSize / 4，大于剩下的内存，相当于剩下的内存不足kBlockSize / 4，直接放弃
   alloc_ptr_ = AllocateNewBlock(kBlockSize);
   alloc_bytes_remaining_ = kBlockSize;
 
@@ -36,15 +36,15 @@ char* Arena::AllocateFallback(size_t bytes) {
 }
 
 char* Arena::AllocateAligned(size_t bytes) {
-  const int align = (sizeof(void*) > 8) ? sizeof(void*) : 8;
+  const int align = (sizeof(void*) > 8) ? sizeof(void*) : 8; //小于8就是8
   static_assert((align & (align - 1)) == 0,
-                "Pointer size should be a power of 2");
-  size_t current_mod = reinterpret_cast<uintptr_t>(alloc_ptr_) & (align - 1);
-  size_t slop = (current_mod == 0 ? 0 : align - current_mod);
-  size_t needed = bytes + slop;
+                "Pointer size should be a power of 2");      //x &(x-1) 判断是不是2的倍数
+  size_t current_mod = reinterpret_cast<uintptr_t>(alloc_ptr_) & (align - 1); //x &(y-1) 取模 即 x%y 前提是 y是2的n次方
+  size_t slop = (current_mod == 0 ? 0 : align - current_mod); //分配当前内存所需要填充的字节 slop
+  size_t needed = bytes + slop;//总共分配的字节
   char* result;
   if (needed <= alloc_bytes_remaining_) {
-    result = alloc_ptr_ + slop;
+    result = alloc_ptr_ + slop;    //result 指向每个内存序开始的位置，也就是储存新分配字节的起始位置
     alloc_ptr_ += needed;
     alloc_bytes_remaining_ -= needed;
   } else {

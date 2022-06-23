@@ -152,13 +152,13 @@ struct SkipList<Key, Comparator>::Node {
     assert(n >= 0);
     // Use an 'acquire load' so that we observe a fully initialized
     // version of the returned Node.
-    return next_[n].load(std::memory_order_acquire);
+    return next_[n].load(std::memory_order_acquire);//原子地获得原子对象的值
   }
   void SetNext(int n, Node* x) {
     assert(n >= 0);
     // Use a 'release store' so that anybody who reads through this
     // pointer observes a fully initialized version of the inserted node.
-    next_[n].store(x, std::memory_order_release);
+    next_[n].store(x, std::memory_order_release);//原子地以非原子对象替换原子对象的值 
   }
 
   // No-barrier variants that can be safely used in a few locations.

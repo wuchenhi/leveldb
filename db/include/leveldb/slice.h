@@ -43,7 +43,6 @@ memcmp (const void *str1, const void *str2, size_t count)
 */
 namespace leveldb {
 
-//why use slice 因为返回slcie时 只需返回指针和长度，不需要复制较长的key value  且不以'\0'结尾，可以储存'\0'数据
 class LEVELDB_EXPORT Slice {
  public:
   // Create an empty slice.

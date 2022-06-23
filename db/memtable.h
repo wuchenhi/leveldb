@@ -16,7 +16,7 @@ namespace leveldb {
 
 class InternalKeyComparator;
 class MemTableIterator;
-
+//使⽤leveldb写⼊的数据，在处理时为了加快查找性能，部分数据会在内存中也存储⼀份，该部分存储的结构便是MemTable。
 class MemTable {
  public:
   // MemTables are reference counted.  The initial reference count
@@ -65,21 +65,21 @@ class MemTable {
  private:
   friend class MemTableIterator;
   friend class MemTableBackwardIterator;
-
+  //采⽤了InternalKeyComparator，提供了重载()操作符操作
   struct KeyComparator {
     const InternalKeyComparator comparator;
     explicit KeyComparator(const InternalKeyComparator& c) : comparator(c) {}
     int operator()(const char* a, const char* b) const;
   };
 
-  typedef SkipList<const char*, KeyComparator> Table;
+  typedef SkipList<const char*, KeyComparator> Table; //⽐较器是KeyComparator
 
   ~MemTable();  // Private since only Unref() should be used to delete it
 
   KeyComparator comparator_;
   int refs_;
   Arena arena_;
-  Table table_;
+  Table table_;//skiplist(跳表)
 };
 
 }  // namespace leveldb
